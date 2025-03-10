@@ -10,10 +10,21 @@ import (
 const ProgramDir string = "tf" + string(filepath.Separator) + "custom"
 
 func main() {
+	// Verify location
 	workingDir := locationCheck()
+
+	// Locate custom Hud
 	hud := findHud(workingDir)
 
-	findManifest(hud)
+	// Locate hudanimations_manifest.txt
+	manifest := findManifest(hud)
+
+	// Scan manifest for animation files
+	animationFiles := scanManifest(manifest)
+	fmt.Println(animationFiles)
+
+	// Scan animation files for HudTournamentSetupPanelOpen/Close
+	scanAnimations(hud, animationFiles)
 }
 
 func locationCheck() string {
