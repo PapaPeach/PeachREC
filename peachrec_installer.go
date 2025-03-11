@@ -21,10 +21,15 @@ func main() {
 
 	// Scan manifest for animation files
 	animationFiles := scanManifest(manifest)
-	fmt.Println(animationFiles)
 
 	// Scan animation files for HudTournamentSetupPanelOpen/Close
-	scanAnimations(hud, animationFiles)
+	HintMessageHide, HudTournamentSetupPanelOpen, HudTournamentSetupPanelClose := scanAnimations(hud, animationFiles)
+
+	// Insert PeachREC animations
+	peachRecAnimations := insertPeachRecAnimations(HintMessageHide, HudTournamentSetupPanelOpen, HudTournamentSetupPanelClose)
+	for _, animation := range peachRecAnimations {
+		fmt.Println(animation)
+	}
 }
 
 func locationCheck() string {
@@ -38,7 +43,7 @@ func locationCheck() string {
 	if strings.HasSuffix(workingDir, ProgramDir) {
 		fmt.Println("Location check passed.")
 	} else {
-		fmt.Printf("Location check failed.\nProgram must be placted in your tf\\custom folder. Program is currently in:\n%v\n", workingDir)
+		fmt.Printf("Location check failed.\nProgram must be placted in your tf\\custom folder. Program is currently in:\n%v\n\n", workingDir)
 		//os.Exit(0)
 	}
 
@@ -56,7 +61,6 @@ func findHud(workingDir string) string {
 	for i := range mods {
 		if mods[i].IsDir() {
 			target := filepath.Join(mods[i].Name(), "info.vdf")
-			fmt.Println("Searching: " + target)
 			if _, err := os.Stat(target); err == nil {
 				return filepath.Join(workingDir, mods[i].Name())
 			}
