@@ -20,16 +20,25 @@ func main() {
 	manifest := findManifest(hud)
 
 	// Scan manifest for animation files
-	animationFiles := scanManifest(manifest)
+	hudAnimationsManifest, animationFiles := scanManifest(manifest)
+
+	// Insert PeachREC animations file in manifest
+	peachRecManifest := insertPeachRecManifest(hudAnimationsManifest)
 
 	// Scan animation files for HudTournamentSetupPanelOpen/Close
 	HintMessageHide, HudTournamentSetupPanelOpen, HudTournamentSetupPanelClose := scanAnimations(hud, animationFiles)
 
 	// Insert PeachREC animations
 	peachRecAnimations := insertPeachRecAnimations(HintMessageHide, HudTournamentSetupPanelOpen, HudTournamentSetupPanelClose)
-	for _, animation := range peachRecAnimations {
-		fmt.Println(animation)
-	}
+
+	// Generate updated hudanimations_manifest.txt
+	generateManifest(manifest, peachRecManifest)
+
+	// Generate hudanimations_peachrect.txt
+	generateAnimations(hud, peachRecAnimations)
+
+	// Generate cfg/peachrec.cfg
+	generateConfig(hud)
 }
 
 func locationCheck() string {
@@ -44,7 +53,7 @@ func locationCheck() string {
 		fmt.Println("Location check passed.")
 	} else {
 		fmt.Printf("Location check failed.\nProgram must be placted in your tf\\custom folder. Program is currently in:\n%v\n\n", workingDir)
-		//os.Exit(0)
+		//os.Exit(1)
 	}
 
 	return workingDir
@@ -71,4 +80,8 @@ func findHud(workingDir string) string {
 	// TODO generate with default code if no custom hud is found.
 	os.Exit(0)
 	return ""
+}
+
+func findAutoExec() {
+
 }

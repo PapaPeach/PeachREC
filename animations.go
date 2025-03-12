@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 )
 
@@ -28,7 +29,7 @@ func findManifest(hud string) string {
 	return "Did not find hudanimations_manifest.txt"
 }
 
-func scanManifest(manifest string) []string {
+func scanManifest(manifest string) ([]string, []string) {
 	// Get file names to search
 	input, err := os.Open(manifest)
 	if err != nil {
@@ -39,9 +40,16 @@ func scanManifest(manifest string) []string {
 
 	// Create slice containing animation files
 	var files []string
+	var hudAnimationsManifest []string
 	scnr := bufio.NewScanner(input)
 	for scnr.Scan() {
 		line := scnr.Text()
+		// If line is a known PeachREC line
+		if strings.Contains(line, "peachrec") {
+			continue
+		}
+		hudAnimationsManifest = append(hudAnimationsManifest, line)
+		// Make a list of files to search for code
 		for _, token := range strings.Fields(line) {
 			// If line is commented or incompatible, skip
 			if strings.HasPrefix(token, "//") || strings.HasPrefix(token, "../") {
@@ -53,7 +61,19 @@ func scanManifest(manifest string) []string {
 			}
 		}
 	}
-	return files
+	return hudAnimationsManifest, files
+}
+
+func insertPeachRecManifest(hudAnimationsManifest []string) []string {
+	var peachRecManifest []string
+	// Insert PeachREC file path to the top of the manifest
+	for f, line := range hudAnimationsManifest {
+		if strings.Contains(line, "{") {
+			peachRecManifest = slices.Insert(hudAnimationsManifest, f+1, "\tfile\tscripts/hudanimations_peachrec.txt")
+			return peachRecManifest
+		}
+	}
+	return hudAnimationsManifest
 }
 
 func scanAnimations(hud string, files []string) ([]string, []string, []string) {
