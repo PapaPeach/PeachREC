@@ -83,9 +83,10 @@ func scanAnimations(hud string, files []string) ([]string, []string, []string) {
 	var HudTournamentSetupPanelClose []string
 
 	for _, file := range files {
-		input, err := os.Open(filepath.Join(hud, file))
+		input, err := os.Open(filepath.Join(hud, strings.ReplaceAll(file, "\"", "")))
 		if err != nil && !errors.Is(err, os.ErrNotExist) {
 			fmt.Printf("Error opening %v to scan animations: %v", file, err)
+			os.Exit(1)
 		}
 
 		// Go through current file
@@ -98,7 +99,7 @@ func scanAnimations(hud string, files []string) ([]string, []string, []string) {
 			for _, token := range strings.Fields(line) {
 				if strings.HasPrefix(token, "//") { // Ignore commented lines
 					break
-				} else if strings.Contains(line, "//PeachREC") { // Skip known PeachREC lines
+				} else if strings.Contains(line, "PeachRec") { // Skip known PeachREC lines
 					break
 				}
 
@@ -145,7 +146,7 @@ func insertPeachRecAnimations(HintMessageHide []string, HudTournamentSetupPanelO
 		peachRecAnimations = append(peachRecAnimations, line)
 		// Add PeachREC line just before closing
 		if a == len(HintMessageHide)-2 {
-			peachRecAnimations = append(peachRecAnimations, "\n\tRunEventChild MainMenuOverride PeachRecSpawn 0.0 //PeachREC")
+			peachRecAnimations = append(peachRecAnimations, "\n\tRunEventChild MainMenuOverride PeachRecSpawn 0.0")
 		}
 	}
 	// Insert animations for HudTournamentSetupPanelOpen
@@ -153,7 +154,7 @@ func insertPeachRecAnimations(HintMessageHide []string, HudTournamentSetupPanelO
 		peachRecAnimations = append(peachRecAnimations, line)
 		// Add PeachREC line just before closing
 		if a == len(HudTournamentSetupPanelOpen)-2 {
-			peachRecAnimations = append(peachRecAnimations, "\n\tRunEventChild MainMenuOverride PeachRecOpen 0.0 //PeachREC")
+			peachRecAnimations = append(peachRecAnimations, "\n\tRunEventChild MainMenuOverride PeachRecOpen 0.0")
 		}
 	}
 	// Insert animations for HudTournamentSetupPanelClose
@@ -161,7 +162,7 @@ func insertPeachRecAnimations(HintMessageHide []string, HudTournamentSetupPanelO
 		peachRecAnimations = append(peachRecAnimations, line)
 		// Add PeachREC line just before closing
 		if a == len(HudTournamentSetupPanelClose)-2 {
-			peachRecAnimations = append(peachRecAnimations, "\n\tRunEventChild MainMenuOverride PeachRecClose 0.0 //PeachREC")
+			peachRecAnimations = append(peachRecAnimations, "\n\tRunEventChild MainMenuOverride PeachRecClose 0.0")
 		}
 	}
 
