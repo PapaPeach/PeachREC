@@ -70,7 +70,7 @@ func insertPeachRecManifest(hudAnimationsManifest []string) []string {
 	// Insert PeachREC file path to the top of the manifest
 	for f, line := range hudAnimationsManifest {
 		if strings.Contains(line, "{") {
-			peachRecManifest = slices.Insert(hudAnimationsManifest, f+1, "\tfile\tscripts/hudanimations_peachrec.txt")
+			peachRecManifest = slices.Insert(hudAnimationsManifest, f+1, "\tfile\thudanimations_peachrec.txt")
 			return peachRecManifest
 		}
 	}
