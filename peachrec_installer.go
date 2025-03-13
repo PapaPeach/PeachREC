@@ -46,6 +46,12 @@ func main() {
 	findAutoExec(workingDir)
 }
 
+func pressToExit() {
+	fmt.Print("Press enter to exit.\n")
+	fmt.Scanln()
+	os.Exit(0)
+}
+
 func locationCheck() string {
 	// Get filepath of working directory
 	workingDir, err := os.Getwd()
@@ -58,7 +64,7 @@ func locationCheck() string {
 		fmt.Println("Location check passed.")
 	} else {
 		fmt.Printf("Location check failed.\nProgram must be placted in your tf\\custom folder. Program is currently in:\n%v\n\n", workingDir)
-		//os.Exit(0)
+		pressToExit()
 	}
 
 	return workingDir
@@ -84,7 +90,7 @@ func findHud(workingDir string) string {
 
 	fmt.Println("No HUD found.")
 	// TODO generate with default code if no custom hud is found.
-	os.Exit(0)
+	pressToExit()
 	return ""
 }
 
@@ -124,7 +130,7 @@ func findAutoExec(workingDir string) {
 		fmt.Println("Skipped adding PeachREC to autoexec.")
 		fmt.Println("Either add \"exec peachrec\" to your autoexec,\nOR add \"+exec peachrec\" to your launch options.")
 		fmt.Println("\nPeachREC installed successfully.")
-		os.Exit(0)
+		pressToExit()
 	}
 
 	// Check for mastercomfig
@@ -189,7 +195,7 @@ func findAutoExec(workingDir string) {
 					fmt.Println("Skipped adding PeachREC to autoexec.")
 					fmt.Println("Either add \"exec peachrec\" to your autoexec,\nOR add \"+exec peachrec\" to your launch options.")
 					fmt.Println("\nPeachREC installed successfully.")
-					os.Exit(0)
+					pressToExit()
 				}
 
 				// No valid response
@@ -200,6 +206,6 @@ func findAutoExec(workingDir string) {
 		}
 	} else { // Unexpected error
 		fmt.Println("Error locating mastercomfig autoexec:", err)
-		os.Exit(1)
+		pressToExit()
 	}
 }

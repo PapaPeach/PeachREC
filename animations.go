@@ -25,8 +25,9 @@ func findManifest(hud string) string {
 		}
 	}
 
-	os.Exit(0)
-	return "Did not find hudanimations_manifest.txt"
+	fmt.Println("Did not find hudanimations_manifest.txt")
+	pressToExit()
+	return ""
 }
 
 func scanManifest(manifest string) ([]string, []string) {
@@ -34,7 +35,7 @@ func scanManifest(manifest string) ([]string, []string) {
 	input, err := os.Open(manifest)
 	if err != nil {
 		fmt.Printf("Error opening %v for reading: %v\n", manifest, err)
-		os.Exit(1)
+		pressToExit()
 	}
 	defer input.Close()
 
@@ -86,7 +87,7 @@ func scanAnimations(hud string, files []string) ([]string, []string, []string) {
 		input, err := os.Open(filepath.Join(hud, strings.ReplaceAll(file, "\"", "")))
 		if err != nil && !errors.Is(err, os.ErrNotExist) {
 			fmt.Printf("Error opening %v to scan animations: %v", file, err)
-			os.Exit(1)
+			pressToExit()
 		}
 
 		// Go through current file

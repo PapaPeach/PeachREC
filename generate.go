@@ -14,7 +14,7 @@ func generateManifest(manifest string, peachRecManifest []string) {
 	file, err := os.Create(manifest)
 	if err != nil {
 		fmt.Println("Error generating hudanimations_manifest.txt:", err)
-		os.Exit(1)
+		pressToExit()
 	}
 	defer file.Close()
 
@@ -37,7 +37,7 @@ func generateAnimations(workingDir string, peachRecAnimations []string) {
 	file, err := os.Create(filepath.Join(filePath, "hudanimations_peachrec.txt"))
 	if err != nil {
 		fmt.Println("Error generating hudanimations_peachrec.txt:", err)
-		os.Exit(1)
+		pressToExit()
 	}
 	defer file.Close()
 
@@ -62,7 +62,7 @@ func generateConfig(workingDir string) {
 	file, err := os.Create(fileName)
 	if err != nil {
 		fmt.Println("Error generating peachrec.cfg:", err)
-		os.Exit(1)
+		pressToExit()
 	}
 	defer file.Close()
 
@@ -99,6 +99,7 @@ func generateAutoexec(file string) {
 	input, err := os.Open(file)
 	if err != nil && !errors.Is(err, os.ErrNotExist) {
 		fmt.Printf("Error opening %v to add PeachREC to autoexec: %v", file, err)
+		pressToExit()
 	}
 
 	// Copy contents
@@ -115,7 +116,7 @@ func generateAutoexec(file string) {
 	output, err := os.Create(file)
 	if err != nil {
 		fmt.Println("Error generating hudanimations_manifest.txt:", err)
-		os.Exit(1)
+		pressToExit()
 	}
 	defer output.Close()
 
