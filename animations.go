@@ -83,6 +83,10 @@ func scanAnimations(hud string, files []string) ([]string, []string, []string) {
 	var HudTournamentSetupPanelOpen []string
 	var HudTournamentSetupPanelClose []string
 
+	foundHintMessageHide := 0
+	foundHudTournamentSetupPanelOpen := 0
+	foundHudTournamentSetupPanelClose := 0
+
 	for _, file := range files {
 		input, err := os.Open(filepath.Join(hud, strings.ReplaceAll(file, "\"", "")))
 		if err != nil && !errors.Is(err, os.ErrNotExist) {
@@ -91,9 +95,7 @@ func scanAnimations(hud string, files []string) ([]string, []string, []string) {
 		}
 
 		// Go through current file
-		foundHintMessageHide := 0
-		foundHudTournamentSetupPanelOpen := 0
-		foundHudTournamentSetupPanelClose := 0
+
 		scnr := bufio.NewScanner(input)
 		for scnr.Scan() {
 			line := scnr.Text()
@@ -103,7 +105,6 @@ func scanAnimations(hud string, files []string) ([]string, []string, []string) {
 				} else if strings.Contains(line, "PeachRec") { // Skip known PeachREC lines
 					break
 				}
-
 				if (foundHintMessageHide < 2 && strings.Contains(line, "event HintMessageHide")) || foundHintMessageHide == 1 { // Copy HintMessageHide
 					// Found animation header, now copy subsequent lines
 					foundHintMessageHide = 1
@@ -137,6 +138,43 @@ func scanAnimations(hud string, files []string) ([]string, []string, []string) {
 		}
 		input.Close()
 	}
+
+	// If no custom HintMessageHide animation is found, use default code
+	if foundHintMessageHide == 0 {
+		HintMessageHide = append(HintMessageHide, "event HintMessageHide")
+		HintMessageHide = append(HintMessageHide, "{")
+		HintMessageHide = append(HintMessageHide, "\tAnimate HudHintDisplay\tFgColor\t\"255 220 0 0\"\tLinear\t0.0\t0.2")
+		HintMessageHide = append(HintMessageHide, "\tAnimate HudHintDisplay\tHintSize\t\"0\"\tDeaccel 0.2\t0.3")
+		HintMessageHide = append(HintMessageHide, "}")
+	} else if foundHintMessageHide == 1 {
+		fmt.Println("Error: Found HintMessageHide animation header, but did not close.")
+		pressToExit()
+	}
+
+	// If no custom HudTournamentSetupPanelOpen animation is found, use default code
+	if foundHudTournamentSetupPanelOpen == 0 {
+		HudTournamentSetupPanelOpen = append(HudTournamentSetupPanelOpen, "event HudTournamentSetupPanelOpen")
+		HudTournamentSetupPanelOpen = append(HudTournamentSetupPanelOpen, "{")
+		HudTournamentSetupPanelOpen = append(HudTournamentSetupPanelOpen, "\tAnimate HudTournamentSetupt\tPosition\t\"c-90 -70\"\tLinear 0.0 0.001")
+		HudTournamentSetupPanelOpen = append(HudTournamentSetupPanelOpen, "\tAnimate HudTournamentSetup\tPosition\t\"c-90 70\"\tSpline 0.001 0.2")
+		HudTournamentSetupPanelOpen = append(HudTournamentSetupPanelOpen, "}")
+	} else if foundHudTournamentSetupPanelOpen == 1 {
+		fmt.Println("Error: Found HudTournamentSetupPanelOpen animation header, but did not close.")
+		pressToExit()
+	}
+
+	// If no custom HudTournamentSetupPanelClose animation is found, use default code
+	if foundHudTournamentSetupPanelClose == 0 {
+		HudTournamentSetupPanelClose = append(HudTournamentSetupPanelClose, "event HudTournamentSetupPanelClose")
+		HudTournamentSetupPanelClose = append(HudTournamentSetupPanelClose, "{")
+		HudTournamentSetupPanelClose = append(HudTournamentSetupPanelClose, "\tAnimate HudTournamentSetup\tPosition\t\"c-90 70\"\tLinear 0.0 0.001")
+		HudTournamentSetupPanelClose = append(HudTournamentSetupPanelClose, "\tAnimate HudTournamentSetup\tPosition\t\"c-90 -70\"\tSpline 0.001 0.2")
+		HudTournamentSetupPanelClose = append(HudTournamentSetupPanelClose, "}")
+	} else if foundHudTournamentSetupPanelClose == 1 {
+		fmt.Println("Error: Found HudTournamentSetupPanelClose animation header, but did not close.")
+		pressToExit()
+	}
+
 	return HintMessageHide, HudTournamentSetupPanelOpen, HudTournamentSetupPanelClose
 }
 
