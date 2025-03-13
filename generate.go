@@ -108,18 +108,31 @@ func generateConfig(workingDir string) {
 	defer file.Close()
 
 	// Write peachrec.cfg
+	file.WriteString("// Edit these to customize the message in chat when recording is started or stopped\n")
+	file.WriteString("alias pr_message_start \"say_team [PeachREC] Recording...\"\n")
+	file.WriteString("alias pr_message_stop \"say_team [PeachREC] Stop record.\"\n\n")
+
+	file.WriteString("// Edit these to customize the sound when recording is on standby, started, or stopped\n")
+	file.WriteString("alias pr_sound_standby \"play ui/mm_xp_chime.wav\"\n")
+	file.WriteString("alias pr_sound_start \"play buttons/button17.wav\"\n")
+	file.WriteString("alias pr_sound_stop \"play buttons/button17.wav\"\n\n\n\n")
+
+	file.WriteString("//============================//\n")
+	file.WriteString("//  PeachREC script contents  //\n")
+	file.WriteString("//   no reason to edit this   //\n")
+	file.WriteString("//============================//\n")
 	file.WriteString("alias peachrec \"player_ready_toggle\"\n\n")
 
 	file.WriteString("alias pr1 \"alias peachrec pr2;alias pr_open pr_open_test;player_ready_toggle\"\n")
 	file.WriteString("alias pr2 \"pr_trigger\"\n")
 	file.WriteString("alias pr_reset \"alias peachrec pr1\"\n")
-	file.WriteString("alias pr_trigger \"alias peachrec;alias pr_close pr_end;ds_record;echo =====PeachREC.started.recording=====\"\n")
-	file.WriteString("alias pr_end \"ds_stop;alias peachrec player_ready_toggle;alias pr_open pr_open_init;alias pr_close pr_close_init;echo =====PeachREC.stopped.recording=====\"\n\n")
+	file.WriteString("alias pr_trigger \"alias peachrec;alias pr_close pr_end;pr_sound_start;pr_messsage_start;ds_record;echo =====PeachREC.started.recording=====\"\n")
+	file.WriteString("alias pr_end \"ds_stop;alias peachrec player_ready_toggle;alias pr_open pr_open_init;alias pr_close pr_close_init;pr_sound_stop;pr_message_stop;echo =====PeachREC.stopped.recording=====\"\n\n")
 
 	file.WriteString("alias pr_open \"pr_open_init\"\n")
 	file.WriteString("alias pr_close \"pr_close_init\"\n\n")
 
-	file.WriteString("alias pr_open_init \"alias peachrec pr1;alias pr_open pr_open_nat;alias pr_close pr_close_nat;player_ready_toggle;echo =====PeachREC.waiting.for.match.to.start=====\"\n")
+	file.WriteString("alias pr_open_init \"alias peachrec pr1;alias pr_open pr_open_nat;alias pr_close pr_close_nat;player_ready_toggle;pr_sound_standby;echo =====PeachREC.waiting.for.match.to.start=====\"\n")
 	file.WriteString("alias pr_close_init \"player_ready_toggle\"\n\n")
 
 	file.WriteString("alias pr_open_nat \"alias pr_close pr_close_nat\"\n")
@@ -128,9 +141,10 @@ func generateConfig(workingDir string) {
 	file.WriteString("alias pr_open_test \"pr_reset;alias pr_open pr_open_nat;alias pr_close pr_close_nat;player_ready_toggle\"\n\n")
 
 	file.WriteString("alias pr_close_newserver \"alias peachrec player_ready_toggle;alias pr_open pr_open_init;alias pr_close pr_close_init;echo =====PeachREC.detected.new.server=====\"\n")
-	file.WriteString("alias pr2_newserver \"alias pr2 pr_trigger;echo =====PeachREC.detected.new.match.server=====\"\n\n")
+	file.WriteString("alias pr2_newserver \"alias pr2 pr_trigger;echo =====PeachREC.detected.new.match.server=====\"\n")
+	file.WriteString("alias pr_mvm \"alias peachrec;echo =====PeachREC.detected.MvM.server=====\"\n\n")
 
-	file.WriteString("echo ===============\necho PeachREC Active\necho ===============")
+	file.WriteString("echo\necho ===============\necho PeachREC Active\necho ===============\necho")
 
 	fmt.Println("Created _PeachREC/cfg/peachrec.cfg")
 }

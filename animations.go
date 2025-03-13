@@ -77,15 +77,17 @@ func insertPeachRecManifest(hudAnimationsManifest []string) []string {
 	return hudAnimationsManifest
 }
 
-func scanAnimations(hud string, files []string) ([]string, []string, []string) {
+func scanAnimations(hud string, files []string) ([]string, []string, []string, []string) {
 	// Go through each animation file and find the first instance of HintMessageHide and HudTournamentSetupPanelOpen/Close
-	var HintMessageHide []string
-	var HudTournamentSetupPanelOpen []string
-	var HudTournamentSetupPanelClose []string
+	var hintMessageHide []string
+	var hudTournamentSetupPanelOpen []string
+	var hudTournamentSetupPanelClose []string
+	var hudReadyPulseEnd []string
 
 	foundHintMessageHide := 0
 	foundHudTournamentSetupPanelOpen := 0
 	foundHudTournamentSetupPanelClose := 0
+	foundHudReadyPulseEnd := 0
 
 	for _, file := range files {
 		input, err := os.Open(filepath.Join(hud, strings.ReplaceAll(file, "\"", "")))
@@ -108,32 +110,44 @@ func scanAnimations(hud string, files []string) ([]string, []string, []string) {
 				if (foundHintMessageHide < 2 && strings.Contains(line, "event HintMessageHide")) || foundHintMessageHide == 1 { // Copy HintMessageHide
 					// Found animation header, now copy subsequent lines
 					foundHintMessageHide = 1
-					HintMessageHide = append(HintMessageHide, line)
+					hintMessageHide = append(hintMessageHide, line)
 					if strings.Contains(line, "}") { // Stop copying once a close brace is copies
 						foundHintMessageHide = 2
+						fmt.Println("Found custom HintMessageHide animation, using that")
 					}
 					break
 				} else if (foundHudTournamentSetupPanelOpen < 2 && strings.Contains(line, "event HudTournamentSetupPanelOpen")) || foundHudTournamentSetupPanelOpen == 1 { // Copy HudTournamentSetupPanelOpen
 					// Found animation header, now copy subsequent lines
 					foundHudTournamentSetupPanelOpen = 1
-					HudTournamentSetupPanelOpen = append(HudTournamentSetupPanelOpen, line)
+					hudTournamentSetupPanelOpen = append(hudTournamentSetupPanelOpen, line)
 					if strings.Contains(line, "}") { // Stop copying once a close brace is copies
 						foundHudTournamentSetupPanelOpen = 2
+						fmt.Println("Found custom HudTournamentSetupPanelOpen animation, using that")
 					}
 					break
 				} else if (foundHudTournamentSetupPanelClose < 2 && strings.Contains(line, "event HudTournamentSetupPanelClose")) || foundHudTournamentSetupPanelClose == 1 { // Copy HudTournamentSetupPanelClose
 					// Found animation header, now copy subsequent lines
 					foundHudTournamentSetupPanelClose = 1
-					HudTournamentSetupPanelClose = append(HudTournamentSetupPanelClose, line)
+					hudTournamentSetupPanelClose = append(hudTournamentSetupPanelClose, line)
 					if strings.Contains(line, "}") { // Stop copying once a close brace is copies
 						foundHudTournamentSetupPanelClose = 2
+						fmt.Println("Found custom HudTournamentSetupPanelClose animation, using that")
+					}
+					break
+				} else if (foundHudReadyPulseEnd < 2 && strings.Contains(line, "event HudReadyPulseEnd")) || foundHudReadyPulseEnd == 1 { // Copy HudReadyPulseEnd
+					// Found animation header, now copy subsequent lines
+					foundHudReadyPulseEnd = 1
+					hudReadyPulseEnd = append(hudReadyPulseEnd, line)
+					if strings.Contains(line, "}") { // Stop copying once a close brace is copies
+						foundHudReadyPulseEnd = 2
+						fmt.Println("Found custom HudReadyPulseEnd animation, using that")
 					}
 					break
 				}
 			}
 			// If all required animations are found
-			if foundHintMessageHide == 2 && foundHudTournamentSetupPanelOpen == 2 && foundHudTournamentSetupPanelClose == 2 {
-				return HintMessageHide, HudTournamentSetupPanelOpen, HudTournamentSetupPanelClose
+			if foundHintMessageHide == 2 && foundHudTournamentSetupPanelOpen == 2 && foundHudTournamentSetupPanelClose == 2 && foundHudReadyPulseEnd == 2 {
+				return hintMessageHide, hudTournamentSetupPanelOpen, hudTournamentSetupPanelClose, hudReadyPulseEnd
 			}
 		}
 		input.Close()
@@ -141,67 +155,98 @@ func scanAnimations(hud string, files []string) ([]string, []string, []string) {
 
 	// If no custom HintMessageHide animation is found, use default code
 	if foundHintMessageHide == 0 {
-		HintMessageHide = append(HintMessageHide, "event HintMessageHide")
-		HintMessageHide = append(HintMessageHide, "{")
-		HintMessageHide = append(HintMessageHide, "\tAnimate HudHintDisplay\tFgColor\t\"255 220 0 0\"\tLinear\t0.0\t0.2")
-		HintMessageHide = append(HintMessageHide, "\tAnimate HudHintDisplay\tHintSize\t\"0\"\tDeaccel 0.2\t0.3")
-		HintMessageHide = append(HintMessageHide, "}")
+		hintMessageHide = append(hintMessageHide, "event HintMessageHide")
+		hintMessageHide = append(hintMessageHide, "{")
+		hintMessageHide = append(hintMessageHide, "\tAnimate HudHintDisplay\tFgColor\t\"255 220 0 0\"\tLinear\t0.0\t0.2")
+		hintMessageHide = append(hintMessageHide, "\tAnimate HudHintDisplay\tHintSize\t\"0\"\tDeaccel 0.2\t0.3")
+		hintMessageHide = append(hintMessageHide, "}")
+
+		fmt.Println("Did not find custom HintMessageHide animation, using default")
 	} else if foundHintMessageHide == 1 {
-		fmt.Println("Error: Found HintMessageHide animation header, but did not close.")
+		fmt.Println("Error: Found HintMessageHide animation header, but did not close")
 		pressToExit()
 	}
 
 	// If no custom HudTournamentSetupPanelOpen animation is found, use default code
 	if foundHudTournamentSetupPanelOpen == 0 {
-		HudTournamentSetupPanelOpen = append(HudTournamentSetupPanelOpen, "event HudTournamentSetupPanelOpen")
-		HudTournamentSetupPanelOpen = append(HudTournamentSetupPanelOpen, "{")
-		HudTournamentSetupPanelOpen = append(HudTournamentSetupPanelOpen, "\tAnimate HudTournamentSetupt\tPosition\t\"c-90 -70\"\tLinear 0.0 0.001")
-		HudTournamentSetupPanelOpen = append(HudTournamentSetupPanelOpen, "\tAnimate HudTournamentSetup\tPosition\t\"c-90 70\"\tSpline 0.001 0.2")
-		HudTournamentSetupPanelOpen = append(HudTournamentSetupPanelOpen, "}")
+		hudTournamentSetupPanelOpen = append(hudTournamentSetupPanelOpen, "event HudTournamentSetupPanelOpen")
+		hudTournamentSetupPanelOpen = append(hudTournamentSetupPanelOpen, "{")
+		hudTournamentSetupPanelOpen = append(hudTournamentSetupPanelOpen, "\tAnimate HudTournamentSetupt\tPosition\t\"c-90 -70\"\tLinear 0.0 0.001")
+		hudTournamentSetupPanelOpen = append(hudTournamentSetupPanelOpen, "\tAnimate HudTournamentSetup\tPosition\t\"c-90 70\"\tSpline 0.001 0.2")
+		hudTournamentSetupPanelOpen = append(hudTournamentSetupPanelOpen, "}")
+
+		fmt.Println("Did not find custom HudTournamentSetupPanelOpen animation, using default")
 	} else if foundHudTournamentSetupPanelOpen == 1 {
-		fmt.Println("Error: Found HudTournamentSetupPanelOpen animation header, but did not close.")
+		fmt.Println("Error: Found HudTournamentSetupPanelOpen animation header, but did not close")
 		pressToExit()
 	}
 
 	// If no custom HudTournamentSetupPanelClose animation is found, use default code
 	if foundHudTournamentSetupPanelClose == 0 {
-		HudTournamentSetupPanelClose = append(HudTournamentSetupPanelClose, "event HudTournamentSetupPanelClose")
-		HudTournamentSetupPanelClose = append(HudTournamentSetupPanelClose, "{")
-		HudTournamentSetupPanelClose = append(HudTournamentSetupPanelClose, "\tAnimate HudTournamentSetup\tPosition\t\"c-90 70\"\tLinear 0.0 0.001")
-		HudTournamentSetupPanelClose = append(HudTournamentSetupPanelClose, "\tAnimate HudTournamentSetup\tPosition\t\"c-90 -70\"\tSpline 0.001 0.2")
-		HudTournamentSetupPanelClose = append(HudTournamentSetupPanelClose, "}")
+		hudTournamentSetupPanelClose = append(hudTournamentSetupPanelClose, "event HudTournamentSetupPanelClose")
+		hudTournamentSetupPanelClose = append(hudTournamentSetupPanelClose, "{")
+		hudTournamentSetupPanelClose = append(hudTournamentSetupPanelClose, "\tAnimate HudTournamentSetup\tPosition\t\"c-90 70\"\tLinear 0.0 0.001")
+		hudTournamentSetupPanelClose = append(hudTournamentSetupPanelClose, "\tAnimate HudTournamentSetup\tPosition\t\"c-90 -70\"\tSpline 0.001 0.2")
+		hudTournamentSetupPanelClose = append(hudTournamentSetupPanelClose, "}")
+
+		fmt.Println("Did not find custom HudTournamentSetupPanelClose animation, using default")
 	} else if foundHudTournamentSetupPanelClose == 1 {
-		fmt.Println("Error: Found HudTournamentSetupPanelClose animation header, but did not close.")
+		fmt.Println("Error: Found HudTournamentSetupPanelClose animation header, but did not close")
 		pressToExit()
 	}
 
-	return HintMessageHide, HudTournamentSetupPanelOpen, HudTournamentSetupPanelClose
+	// If no custom HudReadyPulseEnd animation is found, use default code
+	if foundHudReadyPulseEnd == 0 {
+		hudReadyPulseEnd = append(hudReadyPulseEnd, "event HudReadyPulseEnd")
+		hudReadyPulseEnd = append(hudReadyPulseEnd, "{")
+		hudReadyPulseEnd = append(hudReadyPulseEnd, "\tAnimate TournamentInstructionsLabel\tFgColor\t\"TanLight\"\tLinear 0.0 0.1")
+		hudReadyPulseEnd = append(hudReadyPulseEnd, "\tStopEvent HudReadyPulse\t\t0.0")
+		hudReadyPulseEnd = append(hudReadyPulseEnd, "\tStopEvent HudReadyPulseLoop\t0.0")
+		hudReadyPulseEnd = append(hudReadyPulseEnd, "}")
+
+		fmt.Println("Did not find custom HudReadyPulseEnd animation, using default")
+	} else if foundHudReadyPulseEnd == 1 {
+		fmt.Println("Error: Found HudReadyPulseEnd animation header, but did not close")
+		pressToExit()
+	}
+
+	return hintMessageHide, hudTournamentSetupPanelOpen, hudTournamentSetupPanelClose, hudReadyPulseEnd
 }
 
-func insertPeachRecAnimations(HintMessageHide []string, HudTournamentSetupPanelOpen []string, HudTournamentSetupPanelClose []string) []string {
+func insertPeachRecAnimations(hintMessageHide []string, hudTournamentSetupPanelOpen []string, hudTournamentSetupPanelClose []string, hudReadyPulseEnd []string) []string {
 	var peachRecAnimations []string
 	// Insert animations for HintMessageHide
-	for a, line := range HintMessageHide {
+	for a, line := range hintMessageHide {
 		peachRecAnimations = append(peachRecAnimations, line)
 		// Add PeachREC line just before closing
-		if a == len(HintMessageHide)-2 {
+		if a == len(hintMessageHide)-2 {
 			peachRecAnimations = append(peachRecAnimations, "\n\tRunEventChild MainMenuOverride PeachRecSpawn 0.0")
 		}
 	}
 	// Insert animations for HudTournamentSetupPanelOpen
-	for a, line := range HudTournamentSetupPanelOpen {
+	for a, line := range hudTournamentSetupPanelOpen {
 		peachRecAnimations = append(peachRecAnimations, line)
 		// Add PeachREC line just before closing
-		if a == len(HudTournamentSetupPanelOpen)-2 {
+		if a == len(hudTournamentSetupPanelOpen)-2 {
 			peachRecAnimations = append(peachRecAnimations, "\n\tRunEventChild MainMenuOverride PeachRecOpen 0.0")
 		}
 	}
 	// Insert animations for HudTournamentSetupPanelClose
-	for a, line := range HudTournamentSetupPanelClose {
+	for a, line := range hudTournamentSetupPanelClose {
 		peachRecAnimations = append(peachRecAnimations, line)
 		// Add PeachREC line just before closing
-		if a == len(HudTournamentSetupPanelClose)-2 {
+		if a == len(hudTournamentSetupPanelClose)-2 {
 			peachRecAnimations = append(peachRecAnimations, "\n\tRunEventChild MainMenuOverride PeachRecClose 0.0")
+		}
+	}
+	// Insert animations for HudReadyPulseEnd
+	for a, line := range hudReadyPulseEnd {
+		peachRecAnimations = append(peachRecAnimations, line)
+		// Add PeachREC line just before closing
+		if a == len(hudReadyPulseEnd)-2 {
+			peachRecAnimations = append(peachRecAnimations, "\n\tRunEventChild MainMenuOverride PeachRecMvM 0.0 //Must run 3 times")
+			peachRecAnimations = append(peachRecAnimations, "\tRunEventChild MainMenuOverride PeachRecMvM 0.0")
+			peachRecAnimations = append(peachRecAnimations, "\tRunEventChild MainMenuOverride PeachRecMvM 0.0")
 		}
 	}
 
@@ -219,6 +264,11 @@ func insertPeachRecAnimations(HintMessageHide []string, HudTournamentSetupPanelO
 	peachRecAnimations = append(peachRecAnimations, "event PeachRecClose")
 	peachRecAnimations = append(peachRecAnimations, "{")
 	peachRecAnimations = append(peachRecAnimations, "\tFireCommand 0.0 \"engine pr_close\"")
+	peachRecAnimations = append(peachRecAnimations, "}")
+
+	peachRecAnimations = append(peachRecAnimations, "event PeachRecMvM")
+	peachRecAnimations = append(peachRecAnimations, "{")
+	peachRecAnimations = append(peachRecAnimations, "\tFireCommand 0.0 \"engine pr_mvm\"")
 	peachRecAnimations = append(peachRecAnimations, "}")
 
 	return peachRecAnimations

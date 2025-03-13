@@ -25,6 +25,7 @@ func main() {
 
 	// Locate hudanimations_manifest.txt
 	manifest := findManifest(hud)
+	fmt.Println()
 
 	// Scan manifest for animation files
 	hudAnimationsManifest, animationFiles := scanManifest(manifest)
@@ -33,10 +34,11 @@ func main() {
 	peachRecManifest := insertPeachRecManifest(hudAnimationsManifest)
 
 	// Scan animation files for HudTournamentSetupPanelOpen/Close
-	HintMessageHide, HudTournamentSetupPanelOpen, HudTournamentSetupPanelClose := scanAnimations(hud, animationFiles)
+	hintMessageHide, hudTournamentSetupPanelOpen, hudTournamentSetupPanelClose, hudReadyPulseEnd := scanAnimations(hud, animationFiles)
+	fmt.Println()
 
 	// Insert PeachREC animations
-	peachRecAnimations := insertPeachRecAnimations(HintMessageHide, HudTournamentSetupPanelOpen, HudTournamentSetupPanelClose)
+	peachRecAnimations := insertPeachRecAnimations(hintMessageHide, hudTournamentSetupPanelOpen, hudTournamentSetupPanelClose, hudReadyPulseEnd)
 
 	// Generate updated hudanimations_manifest.txt
 	generateManifest(manifest, peachRecManifest)
@@ -56,7 +58,7 @@ func main() {
 }
 
 func pressToExit() {
-	fmt.Println("\nPress enter to exit.")
+	fmt.Println("\nPress enter to exit")
 	fmt.Scanln()
 	os.Exit(0)
 }
@@ -71,7 +73,7 @@ func locationCheck() string {
 
 	// Check working directory is the desired location
 	if strings.HasSuffix(workingDir, ProgramDir) {
-		fmt.Println("Verified program is in the correct location.")
+		fmt.Println("Verified program is in the correct location")
 	} else {
 		fmt.Printf("Program must be placted in your tf\\custom folder. Program is currently in:\n%v\n", workingDir)
 		pressToExit()
@@ -98,7 +100,7 @@ func findHud(workingDir string) string {
 		}
 	}
 
-	fmt.Println("No custom HUD found, generating with default hud values.")
+	fmt.Println("No custom HUD found, generating with default hud values")
 	return ""
 }
 
@@ -135,9 +137,9 @@ func findAutoExec(workingDir string) {
 
 	// User denied permission
 	if !allowGenerateAutoexec {
-		fmt.Println("Skipped adding PeachREC to autoexec.")
-		fmt.Println("Either add \"exec peachrec\" to your autoexec,\nOR add \"+exec peachrec\" to your launch options.")
-		fmt.Println("\nPeachREC installed successfully.\nEnjoy <3")
+		fmt.Println("Skipped adding PeachREC to autoexec")
+		fmt.Println("Either add \"exec peachrec\" to your autoexec,\nOR add \"+exec peachrec\" to your launch options")
+		fmt.Println("\nPeachREC installed successfully\nEnjoy <3")
 		pressToExit()
 	}
 
@@ -200,9 +202,9 @@ func findAutoExec(workingDir string) {
 					generateAutoexec(cfgAutoexecPath)
 					break
 				} else if strings.EqualFold(response, "n") || strings.EqualFold(response, "no") { // Don't generate new cfg/autoexec.cfg
-					fmt.Println("Skipped adding PeachREC to autoexec.")
-					fmt.Println("Either add \"exec peachrec\" to your autoexec,\nOR add \"+exec peachrec\" to your launch options.")
-					fmt.Println("\nPeachREC installed successfully.\nEnjoy <3")
+					fmt.Println("Skipped adding PeachREC to autoexec")
+					fmt.Println("Either add \"exec peachrec\" to your autoexec,\nOR add \"+exec peachrec\" to your launch options")
+					fmt.Println("\nPeachREC installed successfully\nEnjoy <3")
 					pressToExit()
 				}
 
