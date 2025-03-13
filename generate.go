@@ -26,11 +26,45 @@ func generateManifest(manifest string, peachRecManifest []string) {
 	fmt.Println("Added PeachREC to hudanimation_manifest.txt")
 }
 
+func generateDefaultManifest(workingDir string) {
+	// Check that _PeachREC directory exists
+	filePath := filepath.Join(workingDir, "_PeachREC")
+	_, err := os.Stat(filePath)
+	if errors.Is(err, os.ErrNotExist) { // If _PeachREC does not exist, create one
+		os.Mkdir(filePath, os.ModePerm)
+	}
+
+	// Check that _PeachREC/scripts directory exists
+	filePath = filepath.Join(filePath, "scripts")
+	_, er := os.Stat(filePath)
+	if errors.Is(er, os.ErrNotExist) { // If scripts does not exist, create one
+		os.Mkdir(filePath, os.ModePerm)
+	}
+
+	// Generate hudanimations_manifest using default code
+	fileName := filepath.Join(filePath, "hudanimations_manifest.txt")
+	file, err := os.Create(fileName)
+	if err != nil {
+		fmt.Println("Error generating hudanimations_manifest.txt with default code:", err)
+		pressToExit()
+	}
+	defer file.Close()
+
+	// Write hudanimations_manifest.txt default code
+	file.WriteString("hudanimations_manifest\n")
+	file.WriteString("{\n")
+	file.WriteString("\tfile\tscripts/hudanimations_tf.txt\n")
+	file.WriteString("\tfile\tscripts/hudanimations.txt\n")
+	file.WriteString("}")
+
+	fmt.Println("Created _PeachREC/scripts/hudanimations_manifest.txt")
+}
+
 func generateAnimations(workingDir string, peachRecAnimations []string) {
 	// Generate hudanimations_peachrec.txt
 	filePath := filepath.Join(workingDir, "_PeachREC")
 	_, err := os.Stat(filePath)
-	if errors.Is(err, os.ErrNotExist) { // If cfg does not exist, create one
+	if errors.Is(err, os.ErrNotExist) { // If _PeachREC does not exist, create one
 		os.Mkdir(filePath, os.ModePerm)
 	}
 
@@ -53,7 +87,7 @@ func generateConfig(workingDir string) {
 	// Check that _PeachREC directory exists
 	filePath := filepath.Join(workingDir, "_PeachREC")
 	_, err := os.Stat(filePath)
-	if errors.Is(err, os.ErrNotExist) { // If cfg does not exist, create one
+	if errors.Is(err, os.ErrNotExist) { // If _PeachREC does not exist, create one
 		os.Mkdir(filePath, os.ModePerm)
 	}
 
@@ -102,7 +136,6 @@ func generateConfig(workingDir string) {
 }
 
 func generateAutoexec(file string) {
-	fmt.Println(file)
 	input, err := os.Open(file)
 	if errors.Is(err, os.ErrNotExist) {
 		os.Mkdir(filepath.Dir(file), os.ModePerm)
@@ -123,7 +156,6 @@ func generateAutoexec(file string) {
 
 	// Rewrite contents to file
 	output, err := os.Create(file)
-	fmt.Println("Genertaing autoexec to: ", file)
 	if err != nil {
 		fmt.Println("Error generating autoexec:", err)
 		pressToExit()

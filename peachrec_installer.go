@@ -15,8 +15,13 @@ func main() {
 	// Verify location
 	workingDir := locationCheck()
 
-	// Locate custom Hud
+	// Locate custom HUD
 	hud := findHud(workingDir)
+	// If no custom HUD is found, use default values
+	if hud == "" {
+		generateDefaultManifest(workingDir)
+		hud = filepath.Join(workingDir, "_PeachREC")
+	}
 
 	// Locate hudanimations_manifest.txt
 	manifest := findManifest(hud)
@@ -45,11 +50,13 @@ func main() {
 	// Try to added PeachREC to autoexec
 	findAutoExec(workingDir)
 
+	// Tell user program is done
+	fmt.Println("\nPeachREC installed successfully.\nEnjoy <3")
 	pressToExit()
 }
 
 func pressToExit() {
-	fmt.Print("Press enter to exit.\n")
+	fmt.Println("\nPress enter to exit.")
 	fmt.Scanln()
 	os.Exit(0)
 }
@@ -65,7 +72,7 @@ func locationCheck() string {
 	if strings.HasSuffix(workingDir, ProgramDir) {
 		fmt.Println("Location check passed.")
 	} else {
-		fmt.Printf("Location check failed.\nProgram must be placted in your tf\\custom folder. Program is currently in:\n%v\n\n", workingDir)
+		fmt.Printf("Location check failed.\nProgram must be placted in your tf\\custom folder. Program is currently in:\n%v\n", workingDir)
 		pressToExit()
 	}
 
@@ -90,9 +97,7 @@ func findHud(workingDir string) string {
 		}
 	}
 
-	fmt.Println("No HUD found.")
-	// TODO generate with default code if no custom hud is found.
-	pressToExit()
+	fmt.Println("No custom HUD found, generating with default hud values.")
 	return ""
 }
 
@@ -123,7 +128,7 @@ func findAutoExec(workingDir string) {
 
 		// No valid response
 		if !validGenerateResponse {
-			fmt.Printf("%v is not a valid option. [Y]/[N]\n", response)
+			fmt.Printf("%v is not a valid option. [Y]/[N]: ", response)
 		}
 	}
 
@@ -131,7 +136,7 @@ func findAutoExec(workingDir string) {
 	if !allowGenerateAutoexec {
 		fmt.Println("Skipped adding PeachREC to autoexec.")
 		fmt.Println("Either add \"exec peachrec\" to your autoexec,\nOR add \"+exec peachrec\" to your launch options.")
-		fmt.Println("\nPeachREC installed successfully.")
+		fmt.Println("\nPeachREC installed successfully.\nEnjoy <3")
 		pressToExit()
 	}
 
@@ -169,7 +174,7 @@ func findAutoExec(workingDir string) {
 
 			// No valid response
 			if !validCfgResponse {
-				fmt.Printf("%v is not a valid option. [Y]/[N]\n", response)
+				fmt.Printf("%v is not a valid option. [Y]/[N]: ", response)
 			}
 		}
 	} else if !mastercomfig || errors.Is(err, os.ErrNotExist) { // If overrides/autoexec.cfg does not exist
@@ -196,7 +201,7 @@ func findAutoExec(workingDir string) {
 				} else if strings.EqualFold(response, "n") || strings.EqualFold(response, "no") { // Don't generate new cfg/autoexec.cfg
 					fmt.Println("Skipped adding PeachREC to autoexec.")
 					fmt.Println("Either add \"exec peachrec\" to your autoexec,\nOR add \"+exec peachrec\" to your launch options.")
-					fmt.Println("\nPeachREC installed successfully.")
+					fmt.Println("\nPeachREC installed successfully.\nEnjoy <3")
 					pressToExit()
 				}
 
