@@ -44,6 +44,8 @@ func main() {
 
 	// Try to added PeachREC to autoexec
 	findAutoExec(workingDir)
+
+	pressToExit()
 }
 
 func pressToExit() {

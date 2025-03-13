@@ -50,10 +50,17 @@ func generateAnimations(workingDir string, peachRecAnimations []string) {
 }
 
 func generateConfig(workingDir string) {
-	// Check that cfg directory exists
+	// Check that _PeachREC directory exists
 	filePath := filepath.Join(workingDir, "_PeachREC")
 	_, err := os.Stat(filePath)
 	if errors.Is(err, os.ErrNotExist) { // If cfg does not exist, create one
+		os.Mkdir(filePath, os.ModePerm)
+	}
+
+	// Check that _PeachREC/cfg directory exists
+	filePath = filepath.Join(filePath, "cfg")
+	_, er := os.Stat(filePath)
+	if errors.Is(er, os.ErrNotExist) { // If cfg does not exist, create one
 		os.Mkdir(filePath, os.ModePerm)
 	}
 
@@ -97,8 +104,10 @@ func generateConfig(workingDir string) {
 func generateAutoexec(file string) {
 	fmt.Println(file)
 	input, err := os.Open(file)
-	if err != nil && !errors.Is(err, os.ErrNotExist) {
-		fmt.Printf("Error opening %v to add PeachREC to autoexec: %v", file, err)
+	if errors.Is(err, os.ErrNotExist) {
+		os.Mkdir(filepath.Dir(file), os.ModePerm)
+	} else if err != nil {
+		fmt.Printf("Error opening %v to add PeachREC to autoexec: %v\n", file, err)
 		pressToExit()
 	}
 
@@ -114,8 +123,9 @@ func generateAutoexec(file string) {
 
 	// Rewrite contents to file
 	output, err := os.Create(file)
+	fmt.Println("Genertaing autoexec to: ", file)
 	if err != nil {
-		fmt.Println("Error generating hudanimations_manifest.txt:", err)
+		fmt.Println("Error generating autoexec:", err)
 		pressToExit()
 	}
 	defer output.Close()
