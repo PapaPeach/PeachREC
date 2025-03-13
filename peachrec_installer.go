@@ -65,14 +65,15 @@ func locationCheck() string {
 	// Get filepath of working directory
 	workingDir, err := os.Getwd()
 	if err != nil {
-		fmt.Println("Error checking location of program.")
+		fmt.Println("Error checking location of program:", err)
+		pressToExit()
 	}
 
 	// Check working directory is the desired location
 	if strings.HasSuffix(workingDir, ProgramDir) {
-		fmt.Println("Location check passed.")
+		fmt.Println("Verified program is in the correct location.")
 	} else {
-		fmt.Printf("Location check failed.\nProgram must be placted in your tf\\custom folder. Program is currently in:\n%v\n", workingDir)
+		fmt.Printf("Program must be placted in your tf\\custom folder. Program is currently in:\n%v\n", workingDir)
 		pressToExit()
 	}
 
@@ -107,7 +108,7 @@ func findAutoExec(workingDir string) {
 	var validGenerateResponse bool = false
 	var reader = bufio.NewReader(os.Stdin)
 
-	fmt.Print("Allow program to add \"exec peachrec\" to your autoexec? [Y]/[N]: ")
+	fmt.Print("\nAllow program to add \"exec peachrec\" to your autoexec? [Y]/[N]: ")
 
 	// Loop until we get a response that matches our expectation
 	for !validGenerateResponse {
@@ -185,7 +186,7 @@ func findAutoExec(workingDir string) {
 		} else if errors.Is(err, os.ErrNotExist) { // cfg/autoexec.cfg does not exist
 			var validCfgResponse bool = false
 
-			fmt.Print("No cfg/autoexist.cfg detected. Generate new one? [Y]/[N]: ")
+			fmt.Print("No tf/cfg/autoexec.cfg detected. Generate a new one? [Y]/[N]: ")
 
 			// Loop until we get a response that matches our expectation
 			for !validCfgResponse {
