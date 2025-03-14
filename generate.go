@@ -126,7 +126,7 @@ func generateConfig(workingDir string) {
 	file.WriteString("alias pr1 \"alias peachrec pr2;alias pr_open pr_open_test;player_ready_toggle\"\n")
 	file.WriteString("alias pr2 \"pr_trigger\"\n")
 	file.WriteString("alias pr_reset \"alias peachrec pr1\"\n")
-	file.WriteString("alias pr_trigger \"alias peachrec;alias pr_close pr_end;pr_sound_start;pr_messsage_start;ds_record;echo =====PeachREC.started.recording=====\"\n")
+	file.WriteString("alias pr_trigger \"alias peachrec;alias pr_close pr_end;pr_sound_start;pr_message_start;ds_record;echo =====PeachREC.started.recording=====\"\n")
 	file.WriteString("alias pr_end \"ds_stop;alias peachrec player_ready_toggle;alias pr_open pr_open_init;alias pr_close pr_close_init;pr_sound_stop;pr_message_stop;echo =====PeachREC.stopped.recording=====\"\n\n")
 
 	file.WriteString("alias pr_open \"pr_open_init\"\n")
