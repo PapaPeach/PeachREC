@@ -36,7 +36,7 @@ Offline testing is a bit wonky because of TF2's quirkiness. But to test the func
 | **Category** | **Compatibility** |
 | :--- | :--- |
 | Windows | Fully compatible |
-| Linux | Theoretically compatible |
+| Linux | Fully compatible |
 | Mac | Theoretically compatible |
 | Custom HUDs | Fully compatible |
 | Default HUD | Fully compatible |
@@ -61,10 +61,10 @@ In game the script works as follows:
 - Then the script will be armed and will record whenever the player spawns AND is no longer able to open the tournament setup menu, because the match has started.
 - PeachREC also checks if the player joins a new server to prevent falsely triggering a recording when going from a tournament server to a Casual server.
 
-There's more complexitiy to the script, but that is to work around the quirkiness of HUD animations, match starts, respawns, etc.
+There's more complexity to the script, but that is to work around the quirkiness of HUD animations, match starts, respawns, etc.
 
 # Is This a Virus?
 Nope. Your anti-virus software may flag it as a potential virus, likely just because it is an executable file that your anti-virus software has never seen before. Your anti-virus is doing its job by alerting you to this, running untrusted executable files is inherently dangerous. You should review the code and determine my trustworthiness for yourself and decide whether to use my installer or not.
 
-If you don't trust me you can still use the installer by reviewing the code yourself in this GitHub repository. It is written in Go so it'll be pretty clear to anyone with programing experience what is going on.  
+If you don't trust me you can still use the installer by reviewing the code yourself in this GitHub repository. It is written in Go so it'll be pretty clear to anyone with programming experience what is going on.  
 Once you're satisfied with your code review you can build the installer from source using any updated version of Go. All libraries used are native Go libraries so you can build it by opening a terminal window in the directory you have the source code in and executing a `go build` command, which will build you your own **peachrec_installer.exe** to use following my original install instructions.

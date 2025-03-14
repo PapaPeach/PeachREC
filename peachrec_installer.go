@@ -6,21 +6,35 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 )
 
 const ProgramDir string = "tf" + string(filepath.Separator) + "custom"
+const modNameWindows string = "_PeachREC"
+const modNameUnix string = "_peachrec"
+
+var modName string
 
 func main() {
 	// Verify location
 	workingDir := locationCheck()
+
+	// Detect system OS
+	if runtime.GOOS == "windows" {
+		modName = modNameWindows
+		fmt.Println("Windows OS detected, using mod name \"_PeachREC\"")
+	} else {
+		modName = modNameUnix
+		fmt.Println("Unix OS detected, using mod name \"_peachrec\"")
+	}
 
 	// Locate custom HUD
 	hud := findHud(workingDir)
 	// If no custom HUD is found, use default values
 	if hud == "" {
 		generateDefaultManifest(workingDir)
-		hud = filepath.Join(workingDir, "_PeachREC")
+		hud = filepath.Join(workingDir, modName)
 	}
 
 	// Locate hudanimations_manifest.txt
