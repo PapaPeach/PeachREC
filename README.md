@@ -12,6 +12,17 @@ I recommend making a backup of your *autoexec.cfg* and custom HUD. This isn't st
 
 That's the entire installation process. Though for added security I recommend using `bind [key] ds_status` in conjunction with `ds_notify 2` to display on your demo recording status on your screen when pressing the bound key.
 
+### Offline Testing
+Offline testing is a bit wonky because of TF2's quirkiness. But to test the functionality of PeachREC on an offline / private server:
+- Start on a server with `mp_tournamnet 0` (this is usually default).
+- Set `mp_tournament 1` and make sure the team ready statuses appear at the top of the screen, if they don't you may have to set `mp_waitingforplayers_restart 1`. Once those are visible you should hear the PeachREC standby chime and see "=====PeachREC.waiting.for.match.to.start=====" in console.
+- Set `mp_tournament 0` this simulates the match having started and no longer being able to open the tournament setup menu.  
+**PeachREC will not record yet.**
+- Change class **once** or use a resupply bind to respawn **twice**. In a match this would simulate being sent back to the spawn rooms when pregame ends. For whatever reason resupply binds are only half as wonky as changing class or a match starting.  
+**PeachREC will now start recording.**
+- Set `mp_tournament 1` and make sure the team ready statuses appear at the top of the screen, if they don't you may have to set `mp_waitingforplayers_restart 1`. Once those are visible PeachREC will stop recording.
+- You can repeat this process if you'd like, you may need to resupply bind or respawn via other means inbetween each full run of the test to simulate the halftime.
+
 # Notes
 - PeachREC relies on being present **when the match starts** to record a demo automatically. If you join or have to reconnect halfway through a match **you must record a demo manually**.
 - If you install a different HUD after running **peachrec_installer.exe**, you will need to re-run **peachrec_installer.exe** so that it can modify your new HUD accordingly.
