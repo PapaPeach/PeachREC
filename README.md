@@ -14,6 +14,7 @@ That's the entire installation process. Though for added security I recommend us
 
 # Notes
 - PeachREC relies on being present **when the match starts** to record a demo automatically. If you join or have to reconnect halfway through a match **you must record a demo manually**.
+- If you install a different HUD after running **peachrec_installer.exe**, you will need to re-run **peachrec_installer.exe** so that it can modify your new HUD accordingly.
 - There is a known quirk with PeachREC where in a tournament server, joining a team, joining spectator, then joining a team again, will trigger a recording to start and immediately stop. It's inconsequential and probably impossible to fix.
 
 # Compatibility
@@ -25,7 +26,7 @@ That's the entire installation process. Though for added security I recommend us
 | Custom HUDs | Fully compatible |
 | Default HUD | Fully compatible |
 | Custom configs | Fully compatible |
-| mastercomfig | Fully compatible |
+| mastercomfig (latest) | Fully compatible |
 | No config | Fully compatible |
 | Casual servers | Fully compatible |
 | Community servers | Fully compatible |
@@ -33,7 +34,20 @@ That's the entire installation process. Though for added security I recommend us
 | Valve Competitive servers | Untested |
 | Mann Vs Machine servers | Will automatically ready once |
 
-# How's it work?
+# Is This a Virus?
+Nope. Your anti-virus software may flag it as a potential virus, likely just because it is an executable file that your anti-virus software has never seen before. Your anti-virus is doing its job by alerting you to this, running untrusted executable files is inherently dangerous. You should review the code and determine my trustworthiness for yourself and decide whether to use my installer or not.
+
+If you don't trust me you can still use the installer by reviewing the code yourself in this GitHub repository. It is written in Go so it'll be pretty clear to anyone with programing experience what is going on.  
+Once you're satisfied with your code review you can build the installer from source using any updated version of Go. All libraries used are native Go libraries so you can build it by opening a terminal window in the directory you have the source code in and executing a `go build` command, which will build you your own **peachrec_installer.exe** to use following my original install instructions.
+
+# How Does It Work?
+- The installer searches your custom HUD for hudanimations_manifest.txt, and searches the files referenced within it for animations pertinent to PeachREC.
+- If/when the installer finds a relevant animation, it makes a copy of that animation's code so that PeachREC's animations will behave identically to your custom HUD's, with PeachREC code added in addition to your HUD's.
+- The installer then inserts a file path to the PeachREC animations at the top spot in your HUD's hudanimations_manifest.txt file, so your hud will load PeachREC.
+- Then the installer generates peachrec.cfg with the necessary code and appends `exec peachrec` to your autoexec.cfg if you allow it to.
+- If you don't have a custom HUD or a custom config, the installer will generate PeachREC to be self sufficient using default HUD's values.
+
+In game the script works as follows:
 - PeachREC Checks if the current server allows the tournament setup menu to open (where you set team names and ready), if the menu opens the server is determined to be a match/scrim server.
 - Then the script will be armed and will record whenever the player spawns AND is no longer able to open the tournament setup menu, because the match has started.
 - PeachREC also checks if the player joins a new server to prevent falsely triggering a recording when going from a tournament server to a Casual server.
