@@ -107,7 +107,9 @@ func scanAnimations(hud string, files []string) ([]string, []string, []string, [
 				} else if strings.Contains(line, "PeachRec") { // Skip known PeachREC lines
 					break
 				}
-				if (foundHintMessageHide < 2 && strings.Contains(line, "event HintMessageHide")) || foundHintMessageHide == 1 { // Copy HintMessageHide
+				switch {
+				// Copy HintMessageHide
+				case (foundHintMessageHide < 2 && strings.Contains(line, "event HintMessageHide")) || foundHintMessageHide == 1:
 					// Found animation header, now copy subsequent lines
 					foundHintMessageHide = 1
 					hintMessageHide = append(hintMessageHide, line)
@@ -115,8 +117,9 @@ func scanAnimations(hud string, files []string) ([]string, []string, []string, [
 						foundHintMessageHide = 2
 						fmt.Println("Found custom HintMessageHide animation, using that")
 					}
-					break
-				} else if (foundHudTournamentSetupPanelOpen < 2 && strings.Contains(line, "event HudTournamentSetupPanelOpen")) || foundHudTournamentSetupPanelOpen == 1 { // Copy HudTournamentSetupPanelOpen
+
+				// Copy HudTournamentSetupPanelOpen
+				case (foundHudTournamentSetupPanelOpen < 2 && strings.Contains(line, "event HudTournamentSetupPanelOpen")) || foundHudTournamentSetupPanelOpen == 1:
 					// Found animation header, now copy subsequent lines
 					foundHudTournamentSetupPanelOpen = 1
 					hudTournamentSetupPanelOpen = append(hudTournamentSetupPanelOpen, line)
@@ -124,8 +127,9 @@ func scanAnimations(hud string, files []string) ([]string, []string, []string, [
 						foundHudTournamentSetupPanelOpen = 2
 						fmt.Println("Found custom HudTournamentSetupPanelOpen animation, using that")
 					}
-					break
-				} else if (foundHudTournamentSetupPanelClose < 2 && strings.Contains(line, "event HudTournamentSetupPanelClose")) || foundHudTournamentSetupPanelClose == 1 { // Copy HudTournamentSetupPanelClose
+
+				// Copy HudTournamentSetupPanelClose
+				case (foundHudTournamentSetupPanelClose < 2 && strings.Contains(line, "event HudTournamentSetupPanelClose")) || foundHudTournamentSetupPanelClose == 1:
 					// Found animation header, now copy subsequent lines
 					foundHudTournamentSetupPanelClose = 1
 					hudTournamentSetupPanelClose = append(hudTournamentSetupPanelClose, line)
@@ -133,8 +137,9 @@ func scanAnimations(hud string, files []string) ([]string, []string, []string, [
 						foundHudTournamentSetupPanelClose = 2
 						fmt.Println("Found custom HudTournamentSetupPanelClose animation, using that")
 					}
-					break
-				} else if (foundHudReadyPulseEnd < 2 && strings.Contains(line, "event HudReadyPulseEnd")) || foundHudReadyPulseEnd == 1 { // Copy HudReadyPulseEnd
+
+				// Copy HudReadyPulseEnd
+				case (foundHudReadyPulseEnd < 2 && strings.Contains(line, "event HudReadyPulseEnd")) || foundHudReadyPulseEnd == 1:
 					// Found animation header, now copy subsequent lines
 					foundHudReadyPulseEnd = 1
 					hudReadyPulseEnd = append(hudReadyPulseEnd, line)
@@ -142,7 +147,6 @@ func scanAnimations(hud string, files []string) ([]string, []string, []string, [
 						foundHudReadyPulseEnd = 2
 						fmt.Println("Found custom HudReadyPulseEnd animation, using that")
 					}
-					break
 				}
 			}
 			// If all required animations are found
