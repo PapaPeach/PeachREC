@@ -73,7 +73,11 @@ func main() {
 
 func pressToExit() {
 	fmt.Println("\nPress enter to exit")
-	fmt.Scanln()
+	_, err := fmt.Scanln()
+	if err != nil {
+		fmt.Println("Error reading input:", err)
+		os.Exit(0)
+	}
 	os.Exit(0)
 }
 
@@ -107,7 +111,7 @@ func findHud(workingDir string) string {
 	for i := range mods {
 		if mods[i].IsDir() {
 			target := filepath.Join(mods[i].Name(), "info.vdf")
-			if _, err := os.Stat(target); err == nil {
+			if _, err = os.Stat(target); err == nil {
 				fmt.Println("Found custom HUD:", mods[i].Name())
 				return filepath.Join(workingDir, mods[i].Name())
 			}
@@ -120,8 +124,8 @@ func findHud(workingDir string) string {
 
 func findAutoExec(workingDir string) {
 	// Ask user for permission to append PeachREC to autoexec
-	var allowGenerateAutoexec bool = false
-	var validGenerateResponse bool = false
+	var allowGenerateAutoexec bool
+	var validGenerateResponse bool
 	var reader = bufio.NewReader(os.Stdin)
 
 	fmt.Print("\nAllow program to add \"exec peachrec\" to your autoexec? [Y]/[N]: ")
@@ -136,11 +140,9 @@ func findAutoExec(workingDir string) {
 		if strings.EqualFold(response, "y") || strings.EqualFold(response, "yes") {
 			allowGenerateAutoexec = true
 			validGenerateResponse = true
-			break
 		} else if strings.EqualFold(response, "n") || strings.EqualFold(response, "no") {
 			allowGenerateAutoexec = false
 			validGenerateResponse = true
-			break
 		}
 
 		// No valid response
@@ -158,7 +160,7 @@ func findAutoExec(workingDir string) {
 	}
 
 	// Check for mastercomfig
-	var mastercomfig bool = false
+	var mastercomfig bool
 	tfPath := filepath.Dir(workingDir)
 	cfgPath := filepath.Join(tfPath, "cfg")
 	cfgAutoexecPath := filepath.Join(cfgPath, "autoexec.cfg")
@@ -166,8 +168,9 @@ func findAutoExec(workingDir string) {
 	overrideAutoexecPath := filepath.Join(overridesPath, "autoexec.cfg")
 
 	_, err := os.Stat(overrideAutoexecPath)
-	if err == nil { // overrides/autoexec.cfg exists
-		var validCfgResponse bool = false
+	switch {
+	case err == nil: // overrides/autoexec.cfg exists
+		var validCfgResponse bool
 
 		fmt.Print("Program detected mastercomfig is present. Is this correct? [Y]/[N]: ")
 
@@ -178,29 +181,27 @@ func findAutoExec(workingDir string) {
 			response = strings.TrimSpace(response) // Remove newline
 
 			// Compare user input to allowed responses and only proceed if allowed
-			if strings.EqualFold(response, "y") || strings.EqualFold(response, "yes") { // mastercomfig in use
-				mastercomfig = true
+			switch {
+			// mastercomfig in use
+			case strings.EqualFold(response, "y"), strings.EqualFold(response, "yes"):
 				validCfgResponse = true
 				generateAutoexec(overrideAutoexecPath)
-				break
-			} else if strings.EqualFold(response, "n") || strings.EqualFold(response, "no") { // mastercomfig not in use
+			// mastercomfig not in use
+			case strings.EqualFold(response, "n"), strings.EqualFold(response, "no"):
 				validCfgResponse = true
 				generateAutoexec(cfgAutoexecPath)
-				break
-			}
-
-			// No valid response
-			if !validCfgResponse {
+			default:
 				fmt.Printf("%v is not a valid option. [Y]/[N]: ", response)
 			}
 		}
-	} else if !mastercomfig || errors.Is(err, os.ErrNotExist) { // If overrides/autoexec.cfg does not exist
+	case !mastercomfig || errors.Is(err, os.ErrNotExist): // If overrides/autoexec.cfg does not exist
 		// Check if cfg/autoexec.cfg exists
-		_, err := os.Stat(cfgAutoexecPath)
-		if err == nil { // cfg/autoexec.cfg
+		_, err = os.Stat(cfgAutoexecPath)
+		switch {
+		case err == nil: // cfg/autoexec.cfg
 			generateAutoexec(cfgAutoexecPath)
-		} else if errors.Is(err, os.ErrNotExist) { // cfg/autoexec.cfg does not exist
-			var validCfgResponse bool = false
+		case errors.Is(err, os.ErrNotExist): // cfg/autoexec.cfg does not exist
+			var validCfgResponse bool
 
 			fmt.Print("No tf/cfg/autoexec.cfg detected. Generate a new one? [Y]/[N]: ")
 
@@ -211,24 +212,26 @@ func findAutoExec(workingDir string) {
 				response = strings.TrimSpace(response) // Remove newline
 
 				// Compare user input to allowed responses and only proceed if allowed
-				if strings.EqualFold(response, "y") || strings.EqualFold(response, "yes") { // Generate new cfg/autoexec.cfg
+				switch {
+				// Generate new cfg/autoexec.cfg
+				case strings.EqualFold(response, "y"), strings.EqualFold(response, "yes"):
 					validCfgResponse = true
 					generateAutoexec(cfgAutoexecPath)
-					break
-				} else if strings.EqualFold(response, "n") || strings.EqualFold(response, "no") { // Don't generate new cfg/autoexec.cfg
+				// Don't generate new cfg/autoexec.cfg
+				case strings.EqualFold(response, "n"), strings.EqualFold(response, "no"):
 					fmt.Println("Skipped adding PeachREC to autoexec")
 					fmt.Println("Either add \"exec peachrec\" to your autoexec,\nOR add \"+exec peachrec\" to your launch options")
 					fmt.Println("\nPeachREC installed successfully\nEnjoy <3")
 					pressToExit()
-				}
-
-				// No valid response
-				if !validCfgResponse {
+				default:
 					fmt.Printf("%v is not a valid option. [Y]/[N]\n", response)
 				}
 			}
+		default: // Unexpected error
+			fmt.Println("Error locating mastercomfig autoexec:", err)
+			pressToExit()
 		}
-	} else { // Unexpected error
+	default: // Unexpected error
 		fmt.Println("Error locating mastercomfig autoexec:", err)
 		pressToExit()
 	}
