@@ -1,4 +1,5 @@
 # PeachREC
+Here's a video walkthrough and demo of the PeachREC installer:  
 [![Watch the video](https://img.youtube.com/vi/GuldUj6zqXs/hqdefault.jpg)](https://youtu.be/GuldUj6zqXs)  
 PeachREC is an automated demo recorder for Team Fortress 2 tournament matches. It is a spiritual successor to PREC that makes clever use of animations and scripts to detect and record tournament matches.  
 This differs from Valve's automated demo recording by NOT recording Casual matches, and ONLY recording scrims, matches, or PUGs. It will also automatically start recording at the beginning of the actual match (not pregame) and stop recording at the end of the actual match.
@@ -10,27 +11,26 @@ I recommend making a backup of your *autoexec.cfg* and custom HUD. This isn't st
 - Run **peachrec_installer.exe** and answer any prompts it gives you.
 - If you did not allow the program to edit your *autoexec.cfg* you'll need to manually add `exec peachrec` to it or add `+exec peachrec` to your launch options.
 - If you'd like to configure custom start/stop messages or sounds, you can do that in the generated *_PeachREC/cfg/peachrec.cfg* file.
+- I **HIGHLY** recommend using `bind [key] ds_status` in conjunction with `ds_notify 2` to display on your demo recording status on your screen when pressing the bound key.
 
-That's the entire installation process. Though for added security I recommend using `bind [key] ds_status` in conjunction with `ds_notify 2` to display on your demo recording status on your screen when pressing the bound key.
+That's the entire installation process. If you'd like to test PeachREC after installing, instructions are below.
 
-### Testing
-The easiest and most reliable way to test PeachREC is to play a demo file that includes the pregame and halftime of a tournament match. This won't trigger PeachREC to record a demo but it will trigger start and stop sounds and console feedback.  
-Offline testing is a bit wonky because of TF2's quirkiness. But to test the functionality of PeachREC on an offline / private server:
-- Start on a server with `mp_tournamnet 0` (this is usually default).
-- Set `mp_tournament 1` and make sure the team ready statuses appear at the top of the screen, if they don't you may have to set `mp_waitingforplayers_restart 1`. Once those are visible you should hear the PeachREC standby chime and see "=====PeachREC.waiting.for.match.to.start=====" in console.
-- Set `mp_tournament 0` this simulates the match having started and no longer being able to open the tournament setup menu.  
-**PeachREC will not record yet.**
-- Change class **once** or use a resupply bind to respawn **twice**. In a match this would simulate being sent back to the spawn rooms when pregame ends. For whatever reason resupply binds are only half as wonky as changing class or a match starting.  
-**PeachREC will now start recording.**
-- Set `mp_tournament 1` and make sure the team ready statuses appear at the top of the screen, if they don't you may have to set `mp_waitingforplayers_restart 1`. Once those are visible PeachREC will stop recording.
-- You can repeat this process if you'd like, you may need to resupply bind or respawn via other means inbetween each full run of the test to simulate the halftime.
-
-# Notes
-- PeachREC relies on being present **when the match starts** to record a demo automatically. If you join or have to reconnect halfway through a match **you must record a demo manually**.
+### Important Notes:
+- PeachREC relies on being present **when the match starts** to record a demo automatically. If you join or have to reconnect halfway through a match **you MUST record a demo manually**.
 - If you install a different HUD after running **peachrec_installer.exe**, you will need to re-run **peachrec_installer.exe** so that it can modify your new HUD accordingly.
 - PeachREC makes use of Valve's improved demo recording utilizing `ds_...` commands. Therefore, it retains custom prefixes allowing for users to organize demos however they find most intuitive. You can also use it along side map-prefix generators such as [this one](https://www.teamfortress.tv/47180/demo-support-ds-prefix-on-any-map).
-- There is a known quirk where in MvM respawning for the first time in a match will trigger you to automatically ready once. But after that initial ready PeachREC will detect that you're in an MvM server and will behave itself.
-- There is a known quirk with PeachREC where in a tournament server, joining a team, joining spectator, then joining a team again, will trigger a recording to start and immediately stop. It's inconsequential and probably impossible to fix.
+
+# Known Issues
+| **ID** | **Suspected Cause Description** | **Type** | **Fix** | **Resolution Status** |
+| :---: | --- | --- | --- | --- |
+| 1 | Join server within WaitingForPlayers time (first 30s). | False negative | Hit resupply bind.<br>Self-resolves next respawn. | League / server host needs to add mp_waitingforplayers_cancel 1 to server config.<br>Discussing with league admins / server hosts. |
+| 2 | Match starts while in AFK status. | False negative | Hit resupply bind.<br>Self-resolves next respawn. | Investigating issue. |
+| 3 | Server re-executes the config. | False positive | Hit resupply bind.<br>Self-resolves next respawn. | Likely unfixable. |
+| 4 | In a tournament server, join a team, join spectator, and join a team again. | False positive | Self-resolves instantly | Likely unfixable and mostly inconsequential. |
+| 5 | Lag spike or unlucky timing on match start. | Escape key is disabled | Open and close your text chat. | Testing alternative timings on PeachRecClose animation. |
+| 6 | Join MvM server and resupply / change class before readying. | Auto-ready once | Manually unready.<br>After readying PeachREC will identify the MvM session. | Likely unfixable and mostly inconsequential. |
+- **False Negative** - Does not begin recording a demo when one should have been. **Top Priority!**
+- **False Positive** - Begins recording a demo at an incorrect time. **Mild inconvenience.**
 
 # Compatibility
 | **Category** | **Compatibility** |
@@ -48,6 +48,18 @@ Offline testing is a bit wonky because of TF2's quirkiness. But to test the func
 | Tournament servers | Fully compatible |
 | Valve Competitive servers | Untested |
 | Mann Vs Machine servers | Will automatically ready once |
+
+# Testing
+The easiest and most reliable way to test PeachREC is to play a demo file that includes the pregame and halftime of a tournament match. This won't trigger PeachREC to record a demo but it will trigger start and stop sounds and console feedback.  
+Offline testing is a bit wonky because of TF2's quirkiness. But to test the functionality of PeachREC on an offline / private server:
+- Start on a server with `mp_tournamnet 0` (this is usually default).
+- Set `mp_tournament 1` and make sure the team ready statuses appear at the top of the screen, if they don't you may have to set `mp_waitingforplayers_restart 1`. Once those are visible you should hear the PeachREC standby chime and see "=====PeachREC.waiting.for.match.to.start=====" in console.
+- Set `mp_tournament 0` this simulates the match having started and no longer being able to open the tournament setup menu.  
+**PeachREC will not record yet.**
+- Change class **once** or use a resupply bind to respawn **twice**. In a match this would simulate being sent back to the spawn rooms when pregame ends. For whatever reason resupply binds are only half as wonky as changing class or a match starting.  
+**PeachREC will now start recording.**
+- Set `mp_tournament 1` and make sure the team ready statuses appear at the top of the screen, if they don't you may have to set `mp_waitingforplayers_restart 1`. Once those are visible PeachREC will stop recording.
+- You can repeat this process if you'd like, you may need to resupply bind or respawn via other means inbetween each full run of the test to simulate the halftime.
 
 # How Does It Work?
 - The installer searches your custom HUD for hudanimations_manifest.txt, and searches the files referenced within it for animations pertinent to PeachREC.
