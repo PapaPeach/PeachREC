@@ -97,16 +97,17 @@ func scanAnimations(hud string, files []string) ([]string, []string, []string, [
 		}
 
 		// Go through current file
-
 		scnr := bufio.NewScanner(input)
 		for scnr.Scan() {
 			line := scnr.Text()
+		nextLine: // We scan by tokens to identify the line, once identified we can add the whole line and proceed
 			for _, token := range strings.Fields(line) {
 				if strings.HasPrefix(token, "//") { // Ignore commented lines
 					break
 				} else if strings.Contains(line, "PeachRec") { // Skip known PeachREC lines
 					break
 				}
+
 				switch {
 				// Copy HintMessageHide
 				case (foundHintMessageHide < 2 && strings.Contains(line, "event HintMessageHide")) || foundHintMessageHide == 1:
@@ -117,6 +118,7 @@ func scanAnimations(hud string, files []string) ([]string, []string, []string, [
 						foundHintMessageHide = 2
 						fmt.Println("Found custom HintMessageHide animation, using that")
 					}
+					break nextLine
 
 				// Copy HudTournamentSetupPanelOpen
 				case (foundHudTournamentSetupPanelOpen < 2 && strings.Contains(line, "event HudTournamentSetupPanelOpen")) || foundHudTournamentSetupPanelOpen == 1:
@@ -127,6 +129,7 @@ func scanAnimations(hud string, files []string) ([]string, []string, []string, [
 						foundHudTournamentSetupPanelOpen = 2
 						fmt.Println("Found custom HudTournamentSetupPanelOpen animation, using that")
 					}
+					break nextLine
 
 				// Copy HudTournamentSetupPanelClose
 				case (foundHudTournamentSetupPanelClose < 2 && strings.Contains(line, "event HudTournamentSetupPanelClose")) || foundHudTournamentSetupPanelClose == 1:
@@ -137,6 +140,7 @@ func scanAnimations(hud string, files []string) ([]string, []string, []string, [
 						foundHudTournamentSetupPanelClose = 2
 						fmt.Println("Found custom HudTournamentSetupPanelClose animation, using that")
 					}
+					break nextLine
 
 				// Copy HudReadyPulseEnd
 				case (foundHudReadyPulseEnd < 2 && strings.Contains(line, "event HudReadyPulseEnd")) || foundHudReadyPulseEnd == 1:
@@ -147,6 +151,7 @@ func scanAnimations(hud string, files []string) ([]string, []string, []string, [
 						foundHudReadyPulseEnd = 2
 						fmt.Println("Found custom HudReadyPulseEnd animation, using that")
 					}
+					break nextLine
 				}
 			}
 			// If all required animations are found

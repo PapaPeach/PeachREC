@@ -75,7 +75,7 @@ func pressToExit() {
 	fmt.Println("\nPress enter to exit")
 	_, err := fmt.Scanln()
 	if err != nil {
-		fmt.Println("Error reading input:", err)
+		// Intentionally ignore error because error or not, closing program is the goal
 		os.Exit(0)
 	}
 	os.Exit(0)
