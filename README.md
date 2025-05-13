@@ -18,7 +18,7 @@ That's the entire installation process. If you'd like to test PeachREC after ins
 ### Important Notes:
 - PeachREC relies on being present **when the match starts** to record a demo automatically. If you join or have to reconnect halfway through a match **you MUST record a demo manually**.
 - If you install a different HUD after running **peachrec_installer.exe**, you will need to re-run **peachrec_installer.exe** so that it can modify your new HUD accordingly.
-- PeachREC makes use of Valve's improved demo recording utilizing `ds_...` commands. Therefore, it retains custom prefixes allowing for users to organize demos however they find most intuitive. You can also use it along side map-prefix generators such as [this one](https://www.teamfortress.tv/47180/demo-support-ds-prefix-on-any-map).
+- PeachREC makes use of Valve's improved demo recording utilizing `ds_...` commands. Therefore, it retains custom prefixes allowing for users to organize demos however they find most intuitive. You can also use it along side map-prefix generators such as [my Demo Prefixer](https://github.com/PapaPeach/demo-prefixer).
 
 # Known Issues
 | **ID** | **Suspected Cause Description** | **Type** | **Fix** | **Resolution Status** |
